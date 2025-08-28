@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    {% load static %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+<header>
+  <h1>Linkr</h1>
+</header>
+<div class="container">
+  <h3>Register</h3>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif%}
+  <form method="post" action="{% url 'user_register' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username"><br><br>
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email"><br><br>
+    <label for="phone_number">Phone number</label>
+    <input type="text" name="phone_number" id="phone_number"><br><br>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password"><br><br>
+    <label for="re_enter_password">Re-type Password</label>
+    <input type="password" name="re_enter_password" id="re_enter_password"><br><br>
+    <label for="first_name">First Name</label>
+    <input type="text" name="first_name" id="first_name"><br><br>
+    <label for="last_name">Last Name</label>
+    <input type="text" name="last_name" id="last_name"><br><br>
+    <label>Gender</label>
+    <select name="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="others">Others</option>
+    </select><br><br>
+    <label for="date_of_birth">Date of Birth</label>
+    <input type="date" name="date_of_birth" id="date_of_birth"><br><br>
+    <label>Profile picture</label>
+    <input type="file" name="profile_picture"><br><br>
+    <label for="bio">Bio</label>
+    <input type="text" name="bio" id="bio"><br><br>
+    <label for="location">Location</label>
+    <input type="text" name="location" id="location"><br><br>
+    <label for="website">Website</label>
+    <input type="text" name="website" id="website"><br><br>
+    <div class="btn">
+      <button type="submit">Submit</button>
+      <a href="{% url 'user_login' %}">
+        <button type="button">Existing user / Login</button>
+      </a>
+    </div>
+
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/send_message.css' %}"
+</head>
+<body>
+<div class="container">
+    <h2>Send Message to {{ receiver.username }}</h2>
+
+    <!-- Display success or error messages -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="message_text" placeholder="Type your message..." rows="4" required></textarea><br>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+</body>
+</html>

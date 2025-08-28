@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+<header>
+  <h1>Linkr</h1>
+</header>
+<div class="container">
+    <h3>Login</h3>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+  <form method="post" action="{% url 'user_login' %}">
+      {% csrf_token %}
+    <label for="email">Email</label>
+    <input type="text" name="email" id="email"><br><br>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password"><br><br>
+    <div class="btn">
+      <button type="submit">Login</button>
+    <a href="{% url 'user_register' %}">
+        <button type="button">Register</button>
+    </a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

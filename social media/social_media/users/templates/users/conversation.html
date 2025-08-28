@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/conversation.css' %}">
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+    Chat with {{ other_user.username }}
+</div>
+
+<div class="chat-box" id="chat-box">
+    {% for msg in chat %}
+        {% if msg.sender.user_id == current_user.user_id %}
+            <div class="bubble-right">{{ msg.message_text }} <small>{{ msg.created_at|date:"H:i" }}</small></div>
+        {% else %}
+            <div class="bubble-left">{{ msg.message_text }} <small>{{ msg.created_at|date:"H:i" }}</small></div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="chat-input">
+    <textarea id="message_text" placeholder="Type a message..."></textarea>
+    <button id="send-btn">Send</button>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const sendBtn = document.getElementById('send-btn');
+    const messageText = document.getElementById('message_text');
+
+    // Auto-scroll to bottom
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
+
+    // AJAX message send
+    sendBtn.addEventListener('click', async () => {
+        const msg = messageText.value.trim();
+        if (!msg) return;
+
+        const response = await fetch("{% url 'conversation' other_user.user_id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                'message_text': msg
+            })
+        });
+
+        if (response.ok) {
+            // append message to chat-box without refresh
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble-right');
+            bubble.innerHTML = msg + ' <small>Now</small>';
+            chatBox.appendChild(bubble);
+            messageText.value = '';
+            scrollToBottom();
+        }
+    });
+
+    // Optional: Auto-scroll on new messages every 3 seconds
+    setInterval(async () => {
+        const response = await fetch("{% url 'conversation' other_user.user_id %}?ajax=1");
+        if (response.ok) {
+            const data = await response.json();
+            chatBox.innerHTML = '';
+            data.chat.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.classList.add(msg.sender_id === {{ current_user.user_id }} ? 'bubble-right' : 'bubble-left');
+                bubble.innerHTML = msg.text + ' <small>' + msg.time + '</small>';
+                chatBox.appendChild(bubble);
+            });
+            scrollToBottom();
+        }
+    }, 3000);
+</script>
+
+</body>
+</html>

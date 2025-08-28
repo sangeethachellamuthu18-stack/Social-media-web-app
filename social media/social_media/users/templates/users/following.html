@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/following.css' %}">
+</head>
+<body>
+<div class="container">
+    <h2>{{ user_profile.username }} is Following</h2>
+
+    {% if following %}
+        {% for user in following %}
+            <div class="following">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Image">
+                {% else %}
+                    <img src="https://via.placeholder.com/50" alt="No Profile Image">
+                {% endif %}
+                <a href="{% url 'view_profile' user.user_id %}">
+                    {{ user.username }}
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty">Not following anyone yet.</p>
+    {% endif %}
+</div>
+</body>
+</html>

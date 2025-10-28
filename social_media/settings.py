@@ -56,13 +56,14 @@ WSGI_APPLICATION = 'social_media.wsgi.application'
 
 # DATABASE
 # DATABASE
-if os.environ.get('DATABASE_URL'):
-    # ✅ External MySQL (FreeSQLDatabase)
+# DATABASES
+if os.environ.get('RENDER'):
+    # ✅ When running on Render (use PostgreSQL)
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get("DATABASE_URL"),
+            default=os.getenv('DATABASE_URL'),
             conn_max_age=600,
-            ssl_require=False,  # ❌ Turn off SSL for MySQL
+            ssl_require=True
         )
     }
 else:
@@ -81,6 +82,7 @@ else:
             },
         }
     }
+
 
 
 # PASSWORD VALIDATION

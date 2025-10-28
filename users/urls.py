@@ -21,6 +21,8 @@ urlpatterns = [
     path("edit_profile/", views.edit_profile, name="edit_profile"),
     path("notifications/", views.notifications, name="notifications"),
     path("logout/",views.user_logout, name='user_logout'),
+    path('migrate-now/', views.migrate_now),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

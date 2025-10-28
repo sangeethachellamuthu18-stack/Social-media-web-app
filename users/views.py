@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -6,7 +7,7 @@ from .models import UserRegister,Post,Likes,Comments,Messages,Follow,Notificatio
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.timesince import timesince
 
@@ -417,3 +418,11 @@ def notifications(request):
         n.time_ago = timesince(n.created_at) + " ago"
 
     return render(request, "users/notifications.html", {"notifications": notifications})
+
+
+
+
+
+def migrate_now(request):
+    call_command('migrate')
+    return HttpResponse("Migrations complete!")

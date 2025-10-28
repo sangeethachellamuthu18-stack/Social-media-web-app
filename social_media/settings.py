@@ -55,17 +55,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'social_media.wsgi.application'
 
 # DATABASE
-if os.environ.get('RENDER'):
-    # ✅ Use Render-provided PostgreSQL
+# DATABASE
+if os.environ.get('DATABASE_URL'):
+    # ✅ External MySQL (FreeSQLDatabase)
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get("DATABASE_URL"),
-            conn_max_age=600,  # improves performance
-            ssl_require=True,  # ensure SSL connection
+            conn_max_age=600,
+            ssl_require=False,  # ❌ Turn off SSL for MySQL
         )
     }
 else:
-    # ✅ Local MySQL for development
+    # ✅ Local MySQL (for development)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -80,6 +81,7 @@ else:
             },
         }
     }
+
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [

@@ -57,8 +57,8 @@ WSGI_APPLICATION = 'social_media.wsgi.application'
 # DATABASE
 # DATABASE
 # DATABASES
-if os.environ.get('RENDER'):
-    # ✅ When running on Render (use PostgreSQL)
+if 'RENDER' in os.environ:
+    # ✅ Running on Render → Use PostgreSQL
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
@@ -67,7 +67,7 @@ if os.environ.get('RENDER'):
         )
     }
 else:
-    # ✅ Local MySQL (for development)
+    # ✅ Running locally → Use MySQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

@@ -1,10 +1,9 @@
 """
 Django settings for social_media project.
 """
-
+import dj_database_url
 from pathlib import Path
 import os
-import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +26,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ Needed for static files on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ Required for Render static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -41,7 +40,7 @@ ROOT_URLCONF = 'social_media.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ✅ Optional: place global templates here
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -57,12 +56,16 @@ WSGI_APPLICATION = 'social_media.wsgi.application'
 
 # DATABASE
 if os.environ.get('RENDER'):
-    # ✅ Render database (PostgreSQL)
+    # ✅ Use Render-provided PostgreSQL
     DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+        'default': dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"),
+            conn_max_age=600,  # improves performance
+            ssl_require=True,  # ensure SSL connection
+        )
     }
 else:
-    # ✅ Local MySQL (for development)
+    # ✅ Local MySQL for development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -88,16 +91,21 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'  # ✅ Set to India time
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
 # STATIC & MEDIA FILES
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # ✅ for Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ✅ Optional (for Render): tell Django it's on Render
+if 'RENDER' in os.environ:
+    import logging
+    logging.warning("Running on Render environment.")

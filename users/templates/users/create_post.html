@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/post.css' %}">
+</head>
+<body>
+<main>
+    <div class="post-form">
+        <h2>Create a New Post</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <textarea name="content" placeholder="What's on your mind"></textarea>
+            <br>
+            <input type="file" name="media" accept="image/*" onchange="previewImage(event)">
+            <br>
+            <img id="preview" style="width:300px; height:auto; margin-top:10px; display:none; border-radius:10px;">
+            <br>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+</main>
+<script>
+function previewFile(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    let imagePreview = document.getElementById('previewImage');
+    let videoPreview = document.getElementById('previewVideo');
+
+    // Reset
+    imagePreview.style.display = 'none';
+    videoPreview.style.display = 'none';
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        if (file.type.startsWith("image/")) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+        } else if (file.type.startsWith("video/")) {
+            videoPreview.src = e.target.result;
+            videoPreview.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+
+</script>
+</body>
+</html>

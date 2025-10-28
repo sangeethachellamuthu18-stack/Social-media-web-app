@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+   <header>
+        <h1>Linkr</h1>
+        <a href="{% url 'user_dashboard' %}">🏡 Home</a>
+        <form method="GET" action="{% url 'search_users' %}">
+            <input type="text" name="q" placeholder="Search users..." value="{{ request.GET.q }}">
+            <button type="submit">Search</button>
+        </form>
+        <a href="{% url 'notifications' %}">🔔 Notification</a>
+        <a href="{% url 'inbox' %}">💬 Message</a>
+        <a href="{% url 'user_create_post' %}">➕ Add Post</a>
+        <div class="profile">
+            <img src="{{ user_profile.profile_picture.url }}" alt="{{ user_profile.username }}"
+                 width="40" height="40">
+            <a href="{% url 'view_profile' user_profile.user_id %}">Profile</a>
+        </div>
+        <a href="{% url 'user_logout' %}">Logout</a>
+    </header>
+
+    <main>
+        <!-- Messages display -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for post in posts %}
+            <div class="post-card">
+                <div class="post-header">
+                    {% if post.user.profile_picture %}
+                        <img src="{{ post.user.profile_picture.url }}" alt="profile" class="profile-pic">
+                    {% else %}
+                        <div class="profile-pic" style="background-color: #ddd; display: flex; align-items: center; justify-content: center;">
+                            👤
+                        </div>
+                    {% endif %}
+                    <div>
+                        <strong>{{ post.user.username }}</strong>
+                        <span>• {{ post.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>{{ post.content }}</p>
+                    {% if post.media %}
+                        {% if ".mp4" in post.media.url|lower or ".mov" in post.media.url|lower or ".webm" in post.media.url|lower %}
+                            <video class="post_media" controls>
+                                <source src="{{ post.media.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <img src="{{ post.media.url }}" alt="post media" class="post_media">
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Like button with correct count -->
+                <div class="post-actions">
+                    <form method="POST" action="{% url 'like_post' post.id %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if post.has_liked %}❤️{% else %}🤍{% endif %}
+                            Like ({{ post.likes_set.count }})
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Comments section -->
+                <div class="comments">
+                    <strong>Comments:</strong>
+
+                    {% for comment in post.comments.all %}
+                    <div class="comment">
+                        <p><b>{{ comment.user.username }}</b>: {{ comment.comment_text }}</p>
+                    </div>
+                    {% empty %}
+                       <p>No comments yet</p>
+                    {% endfor %}
+
+                    <!-- Comment Form -->
+                    <form method="POST" action="{% url 'add_comment' post.id %}" class="comment-form">
+                        {% csrf_token %}
+                        <input type="text" name="comment_text" placeholder="Write a comment..." required>
+                        <button type="submit">Post</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <p>No posts yet. Be the first to share something!</p>
+                <a href="{% url 'user_create_post' %}">Create a Post</a>
+            </div>
+        {% endfor %}
+    </main>
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.transition = 'opacity 0.5s';
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+            });
+
+            // Add confirmation for logout
+            const logoutLink = document.querySelector('a[href*="user_logout"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    if (!confirm('Are you sure you want to logout?')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

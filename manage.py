@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
-import os
 import sys
+sys.path.append(r"E:\tools social media app\tools_social_media")
+
+
+import os
+
 
 
 def main():
